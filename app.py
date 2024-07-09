@@ -6,7 +6,7 @@ from PIL import Image
 
 # Load environment variables
 load_dotenv()
-genai.configure(api_key=os.getenv("AIzaSyBmf78vwaOdRV1ifxWHGE66xG4AuGYhWIM"))  # Replace 'YOUR_API_KEY' with your actual API key
+genai.configure(api_key=os.getenv("AIzaSyBmf78vwaOdRV1ifxWHGE66xG4AuGYhWIM"))  
 
 # Function to get response from Gemini
 def get_gemini_response(input_prompt, image_parts, prompt):
@@ -39,7 +39,7 @@ prompts = {
     1. Item 1 - no of calories
     2. Item 2 - no of calories
     Total calories: X
-    Is the meal appropriate for weight loss: Yes/No
+    \nIs the meal appropriate for weight loss: Yes, appropriate calories/No, need more calories
     """,
     "Managing Diabetes": """
     You are an expert in diabetes management where you need to see the food items from the image,
@@ -48,7 +48,7 @@ prompts = {
     1. Item 1 - carbs grams, glycemic index
     2. Item 2 - carbs grams, glycemic index
     Total carbohydrates: X grams
-    Is the meal appropriate for diabetes management: Yes/No
+    \nIs the meal appropriate for diabetes management: Yes, appropriate calories/No, need more calories
     """,
     "Building Muscle": """
     You are an expert in muscle-building nutrition where you need to see the food items from the image,
@@ -57,7 +57,7 @@ prompts = {
     1. Item 1 - protein grams
     2. Item 2 - protein grams
     Total protein: X grams
-    Is the meal appropriate for muscle building: Yes/No
+    \nIs the meal appropriate for muscle building: Yes, appropriate calories/No, need more calories
     """
 }
 
@@ -85,7 +85,7 @@ elif scenario == "Building Muscle":
 
 # Dietary and Health Goals
 st.header("Dietary and Health Goals")
-calorie_goal = st.number_input("Daily Calorie Goal", value=1500, min_value=1000, max_value=3000)
+calorie_goal = st.number_input("Daily Calorie Goal", value=1500, min_value=500, max_value=3000)
 if scenario == "Building Muscle":
     nutrient_focus = st.multiselect("Nutrient Focus", ["Protein", "Carbs", "Fats", "Vitamins", "Minerals"])
 
@@ -114,5 +114,4 @@ if submit:
     except FileNotFoundError as e:
         st.error(str(e))
 
-# Sidebar navigation (placeholder for future expansion)
 
