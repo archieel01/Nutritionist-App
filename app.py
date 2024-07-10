@@ -6,13 +6,22 @@ from PIL import Image
 
 # Load environment variables
 load_dotenv()
-genai.configure(api_key=os.getenv("AIzaSyBmf78vwaOdRV1ifxWHGE66xG4AuGYhWIM"))  
+genai.configure(api_key=os.getenv("AIzaSyBmf78vwaOdRV1ifxWHGE66xG4AuGYhWIM"))
 
 # Function to get response from Gemini
 def get_gemini_response(input_prompt, image_parts, prompt):
     model = genai.GenerativeModel('gemini-pro-vision')
     response = model.generate_content([input_prompt, image_parts[0], prompt])
     return response.text
+
+# Function to generate meal plan based on user inputs
+def get_gemini_meal_plan(custom_prompt):
+    try:
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content([custom_prompt])
+        return response.text
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 # Function to process uploaded image
 def input_image_setup(uploaded_file):
@@ -100,8 +109,16 @@ if uploaded_file is not None:
 st.header("Sync Fitness Tracker")
 fitness_data = st.file_uploader("Upload Fitness Tracker Data", type=["csv", "json"])
 
-# Submit button for analysis
-submit = st.button("Analyze Meal")
+# Space for buttons
+st.empty(                                        )
+
+# Buttons for analysis and meal plan generation
+col1, col2 = st.columns(2)
+
+with col1:
+    submit = st.button("Analyze Meal")
+with col2:
+    generate_plan = st.button("Generate Meal Plan")
 
 if submit:
     try:
@@ -114,4 +131,20 @@ if submit:
     except FileNotFoundError as e:
         st.error(str(e))
 
+if generate_plan:
+    try:
+        personalized_prompt = f"""
+        You are an expert nutritionist. Here is the information about the user:
+        Name: {name}
+        Age: {age}
+        Health Goal: {scenario}
+        Dietary Preference: {diet_preference}
+        Activity Level: {activity_level}
 
+        Please generate a meal plan that fits their requirements and goals.
+        """
+        meal_plan_response = get_gemini_meal_plan(personalized_prompt)
+        st.subheader("Generated Meal Plan")
+        st.write(meal_plan_response)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
